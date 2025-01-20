@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: "auth"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "password"
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+  rust:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    ports:
+      - "5131:5131"
+    environment:
+      POSTGRESS_CON: "postgres://user:password@postgres:5432/auth"
+    networks:
+      - app_network
+
+volumes:
+  data:
+
+
+networks:
+  app_network:
+    driver: bridge
